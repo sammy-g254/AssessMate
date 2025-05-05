@@ -108,7 +108,7 @@ fun MainLogin(){
 
         Button(
             onClick = { },
-            colors = ButtonDefaults.buttonColors(Color(red = 103, green = 58, blue = 183, alpha = 255),),
+            colors = ButtonDefaults.buttonColors(Color(red = 103, green = 58, blue = 183, alpha = 255)),
             shape = RoundedCornerShape(5.dp),
             modifier = Modifier
                 .fillMaxWidth()
@@ -138,9 +138,30 @@ fun MainLogin(){
                 fontSize = 16.sp
             )
             Text(
-                text = "Register here",
+                text = " Register here",
                 fontFamily = FontFamily.SansSerif,
                 color = Color(red = 103, green = 58, blue = 183, alpha = 255),
+                fontSize = 16.sp
+            )
+        }
+
+
+
+    }
+
+    Column {
+        Button(
+            onClick = { },
+            colors = ButtonDefaults.buttonColors(Color.Transparent),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, end = 20.dp),
+            shape = RoundedCornerShape(5.dp)
+        ) {
+            Text(
+                text = "Wish to register your school? Click here",
+                fontFamily = FontFamily.SansSerif,
+                color = Color(red = 0, green = 0, blue = 0, alpha = 255),
                 fontSize = 16.sp
             )
         }

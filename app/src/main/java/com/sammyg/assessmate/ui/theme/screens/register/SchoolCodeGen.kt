@@ -1,6 +1,7 @@
-package com.sammyg.assessmate.ui.theme.screens.login
+package com.sammyg.assessmate.ui.theme.screens.register
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,8 +13,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -29,11 +31,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,7 +46,7 @@ import com.sammyg.assessmate.R
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun SchoolLogin(){
+fun SchoolCodeGen(){
     Column(
         modifier = Modifier
             .paint(
@@ -54,84 +58,85 @@ fun SchoolLogin(){
         verticalArrangement = Arrangement.Center
     ) {
 
-
-
-        Spacer(modifier = Modifier.height(10.dp))
+        var schoolcode by remember { mutableStateOf("") }
 
         Text(
-            text = "SCHOOL MANAGEMENT LOGIN",
-            fontSize = 25.sp,
+            text = "FINISH REGISTERING YOUR SCHOOL",
+            fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.SansSerif,
-            color = Color(red = 103, green = 58, blue = 183, alpha = 255),
+            color = Color(red = 255, green = 255, blue = 255, alpha = 255),
+            modifier = Modifier
+                .background(
+                    color = Color.Black.copy(alpha = 0.5f),
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(8.dp)
         )
-        Spacer(modifier = Modifier.height(10.dp))
-
-        var schoolcode by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
+        Spacer(modifier = Modifier.height(30.dp))
 
         OutlinedTextField(
             value = schoolcode,
             onValueChange = {schoolcode = it},
             label = { Text(text = "School Code", fontFamily = FontFamily.SansSerif)},
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            leadingIcon = { Icon(imageVector = Icons.Default.LocationOn, contentDescription = "")},
+            leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 20.dp, end = 20.dp),
             shape = RoundedCornerShape(5.dp)
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(30.dp))
 
+        val context = LocalContext.current
+        //val authViewModel = AuthViewModel(navController, context)
 
-        OutlinedTextField(
-            value = password,
-            onValueChange = {password = it},
-            label = { Text(text = "Password", fontFamily = FontFamily.SansSerif)},
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "") },
+        Button(
+            onClick = { /*authViewModel.signup(name, email, password,confpassword) */},
+            colors = ButtonDefaults.buttonColors(Color(red = 103, green = 58, blue = 183, alpha = 255)),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 20.dp, end = 20.dp),
-            shape = RoundedCornerShape(5.dp),
-            visualTransformation = PasswordVisualTransformation()
-
-        )
-
-
+            shape = RoundedCornerShape(5.dp)) {
+            Text(text = "GENERATE SCHOOL CODE")
+        }
 
         Spacer(modifier = Modifier.height(10.dp))
+
+        Text(
+            text = "The code generated above is your school code. This will be used by both students and teachers to register to your specific school.",
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.SansSerif,
+            color = Color(red = 103, green = 58, blue = 183, alpha = 255),
+            textAlign = TextAlign.Center,
+            )
+
+        Spacer(modifier = Modifier.height(30.dp))
 
 
 
 
         Button(
-            onClick = { },
-            colors = ButtonDefaults.buttonColors(Color(red = 103, green = 58, blue = 183, alpha = 255),),
-            shape = RoundedCornerShape(5.dp),
-            modifier = Modifier
+            onClick = { /*authViewModel.signup(name, email, password,confpassword) */},
+            colors = ButtonDefaults.buttonColors(Color(red = 103, green = 58, blue = 183, alpha = 255)),            modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 20.dp, end = 20.dp),
-        ) {
-            Text(
-                text = "LOGIN",
-                fontFamily = FontFamily.SansSerif,
-            )
+            shape = RoundedCornerShape(5.dp)) {
+            Text(text = "FINISH")
         }
 
+        Spacer(modifier = Modifier.height(10.dp))
 
+
+        }
 
     }
 
 
-
-
-
-}
-
 @Composable
 @Preview(showBackground = true)
-fun SchoolLoginPreview(){
-    SchoolLogin()
+fun SchoolCodeGenPreview(){
+    SchoolCodeGen()
 }

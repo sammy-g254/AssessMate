@@ -3,6 +3,7 @@ package com.sammyg.assessmate.ui.theme.screens.register
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,15 +14,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,9 +54,16 @@ import androidx.compose.ui.unit.sp
 import com.sammyg.assessmate.R
 
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("SuspiciousIndentation")
 @Composable
 fun MainRegister(){
+
+    val options = listOf("Student", "Teacher")
+    var expanded by remember { mutableStateOf(false) }
+    var selectedOptionText by remember { mutableStateOf(options[0]) }
+
     Column(
         modifier = Modifier
             .paint(
@@ -65,9 +79,9 @@ fun MainRegister(){
 
         Text(
             text = "CREATE AN ACCOUNT",
-            fontSize = 30.sp,
+            fontSize = 35.sp,
             fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.SansSerif,
+            fontFamily = FontFamily.Cursive,
             color = Color(red = 255, green = 255, blue = 255, alpha = 255),
             modifier = Modifier
                 .background(
@@ -159,35 +173,80 @@ fun MainRegister(){
 
         Spacer(modifier = Modifier.height(10.dp))
 
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded },
+            modifier = Modifier.padding(16.dp)
+        ) {
+            TextField(
+                value = selectedOptionText,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Are you a teacher or student?") },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth()
+            )
 
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                options.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(text = option) },
+                        onClick = {
+                            selectedOptionText = option
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
 
 
         val context = LocalContext.current
         //val authViewModel = AuthViewModel(navController, context)
         Button(
             onClick = { /*authViewModel.signup(name, email, password,confpassword) */},
-            colors = ButtonDefaults.buttonColors(Color.DarkGray),
-            modifier = Modifier
+            colors = ButtonDefaults.buttonColors(Color(red = 103, green = 58, blue = 183, alpha = 255)),            modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 20.dp, end = 20.dp),
             shape = RoundedCornerShape(5.dp)) {
-            Text(text = "Register")
+            Text(text = "REGISTER")
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
         Button(
-            onClick = {/*navController.navigate(ROUT_LOGIN)*/},
-            colors = ButtonDefaults.buttonColors(Color.DarkGray),
+            onClick = { },
+            colors = ButtonDefaults.buttonColors(Color.Transparent),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 20.dp, end = 20.dp),
             shape = RoundedCornerShape(5.dp)) {
-            Text(text = "Login")
+            Text(
+                text = "Already a member?",
+                fontFamily = FontFamily.SansSerif,
+                color = Color(red = 200, green = 200, blue = 201, alpha = 255),
+                fontSize = 16.sp
+            )
+            Text(
+                text = " Login here",
+                fontFamily = FontFamily.SansSerif,
+                color = Color(red = 0, green = 188, blue = 212, alpha = 255),
+                fontSize = 16.sp
+            )
         }
 
     }
-}
+
+
+    }
+
 
 @Composable
 @Preview(showBackground = true)
