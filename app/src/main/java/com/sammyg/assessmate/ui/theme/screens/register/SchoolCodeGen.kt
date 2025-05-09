@@ -41,12 +41,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.sammyg.assessmate.R
 
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun SchoolCodeGen(){
+fun SchoolCodeGen(navController: NavHostController){
     Column(
         modifier = Modifier
             .paint(
@@ -138,5 +140,5 @@ fun SchoolCodeGen(){
 @Composable
 @Preview(showBackground = true)
 fun SchoolCodeGenPreview(){
-    SchoolCodeGen()
+    SchoolCodeGen(navController = rememberNavController())
 }

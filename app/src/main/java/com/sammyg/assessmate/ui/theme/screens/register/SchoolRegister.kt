@@ -44,12 +44,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.sammyg.assessmate.R
+import com.sammyg.assessmate.navigation.ROUT_SCHOOL_LOGIN
 
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun SchoolRegister(){
+fun SchoolRegister(navController: NavHostController){
     Column(
         modifier = Modifier
             .paint(
@@ -78,15 +81,15 @@ fun SchoolRegister(){
         )
         Spacer(modifier = Modifier.height(30.dp))
 
-        var name by remember { mutableStateOf("") }
+        var schoolname by remember { mutableStateOf("") }
         var schoolcode by remember { mutableStateOf("") }
-        var email by remember { mutableStateOf("") }
+        var schoolemail by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
         var confpassword by remember { mutableStateOf("") }
 
         OutlinedTextField(
-            value = name,
-            onValueChange = { name = it},
+            value = schoolname,
+            onValueChange = { schoolname = it},
             label = { Text(text = "School Name", fontFamily = FontFamily.SansSerif)},
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             leadingIcon = { Icon(imageVector = Icons.Default.Home, contentDescription = "") },
@@ -99,8 +102,8 @@ fun SchoolRegister(){
 
 
         OutlinedTextField(
-            value = email,
-            onValueChange = {email = it},
+            value = schoolemail,
+            onValueChange = {schoolemail = it},
             label = { Text(text = "School Email Address", fontFamily = FontFamily.SansSerif)},
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "") },
@@ -176,7 +179,7 @@ fun SchoolRegister(){
         Spacer(modifier = Modifier.height(10.dp))
 
         Button(
-            onClick = { },
+            onClick = { navController.navigate(ROUT_SCHOOL_LOGIN) },
             colors = ButtonDefaults.buttonColors(Color.Transparent),
             modifier = Modifier
                 .fillMaxWidth()
@@ -202,5 +205,5 @@ fun SchoolRegister(){
 @Composable
 @Preview(showBackground = true)
 fun SchoolRegisterPreview(){
-    SchoolRegister()
+    SchoolRegister(navController = rememberNavController())
 }

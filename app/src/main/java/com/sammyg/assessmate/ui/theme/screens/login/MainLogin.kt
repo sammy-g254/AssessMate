@@ -1,7 +1,9 @@
 package com.sammyg.assessmate.ui.theme.screens.login
 
 import android.annotation.SuppressLint
+import androidx.navigation.compose.rememberNavController
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,145 +38,156 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.sammyg.assessmate.R
+import com.sammyg.assessmate.navigation.ROUT_MAIN_REGISTER
+import com.sammyg.assessmate.navigation.ROUT_SCHOOL_LOGIN
 
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun MainLogin(){
-    Column(
-        modifier = Modifier
-            .paint(
-                painter = painterResource(R.drawable.img),
-                contentScale = ContentScale.Crop
-            )
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Spacer(modifier = Modifier.height(30.dp))
-
-
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Text(
-            text = "Welcome Back",
-            fontSize = 40.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Cursive,
-            color = Color(red = 103, green = 58, blue = 183, alpha = 255),
-            )
-        Spacer(modifier = Modifier.height(10.dp))
-
-        var email by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = {email = it},
-            label = { Text(text = "Email Address", fontFamily = FontFamily.SansSerif)},
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "")},
+fun MainLogin(navController: NavHostController){
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp),
-            shape = RoundedCornerShape(5.dp)
-        )
+                .paint(
+                    painter = painterResource(R.drawable.img),
+                    contentScale = ContentScale.Crop
+                )
 
-        Spacer(modifier = Modifier.height(10.dp))
-
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = {password = it},
-            label = { Text(text = "Password", fontFamily = FontFamily.SansSerif)},
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp),
-            shape = RoundedCornerShape(5.dp),
-            visualTransformation = PasswordVisualTransformation()
-
-        )
-
-
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-
-
-
-        Button(
-            onClick = { },
-            colors = ButtonDefaults.buttonColors(Color(red = 103, green = 58, blue = 183, alpha = 255)),
-            shape = RoundedCornerShape(5.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp),
-            ) {
-            Text(
-                text = "LOGIN",
-                fontFamily = FontFamily.SansSerif,
-            )
-        }
-
-
-
-
-
-        Button(
-            onClick = { },
-            colors = ButtonDefaults.buttonColors(Color.Transparent),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp),
-            shape = RoundedCornerShape(5.dp)) {
-            Text(
-                text = "Are you a new user?",
-                fontFamily = FontFamily.SansSerif,
-                color = Color(red = 63, green = 81, blue = 181, alpha = 255),
-                fontSize = 16.sp
-            )
-            Text(
-                text = " Register here",
-                fontFamily = FontFamily.SansSerif,
-                color = Color(red = 103, green = 58, blue = 183, alpha = 255),
-                fontSize = 16.sp
-            )
-        }
-
-
-
-    }
-
-    Column {
-        Button(
-            onClick = { },
-            colors = ButtonDefaults.buttonColors(Color.Transparent),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp),
-            shape = RoundedCornerShape(5.dp)
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
+            Spacer(modifier = Modifier.height(30.dp))
+
+
+
+            Spacer(modifier = Modifier.height(10.dp))
+
             Text(
-                text = "Wish to register your school? Click here",
-                fontFamily = FontFamily.SansSerif,
-                color = Color(red = 0, green = 0, blue = 0, alpha = 255),
-                fontSize = 16.sp
+                text = "Welcome Back",
+                fontSize = 40.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Cursive,
+                color = Color(red = 103, green = 58, blue = 183, alpha = 255),
             )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            var email by remember { mutableStateOf("") }
+            var password by remember { mutableStateOf("") }
+
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text(text = "Email Address", fontFamily = FontFamily.SansSerif) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp),
+                shape = RoundedCornerShape(5.dp)
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text(text = "Password", fontFamily = FontFamily.SansSerif) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp),
+                shape = RoundedCornerShape(5.dp),
+                visualTransformation = PasswordVisualTransformation()
+
+            )
+
+
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+
+
+
+            Button(
+                onClick = { },
+                colors = ButtonDefaults.buttonColors(
+                    Color(
+                        red = 103,
+                        green = 58,
+                        blue = 183,
+                        alpha = 255
+                    )
+                ),
+                shape = RoundedCornerShape(5.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp),
+            ) {
+                Text(
+                    text = "LOGIN",
+                    fontFamily = FontFamily.SansSerif,
+                )
+            }
+
+
+
+
+
+            Button(
+                onClick = { navController.navigate(ROUT_MAIN_REGISTER) },
+                colors = ButtonDefaults.buttonColors(Color.Transparent),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp),
+                shape = RoundedCornerShape(5.dp)
+            ) {
+                Text(
+                    text = "Are you a new user?",
+                    fontFamily = FontFamily.SansSerif,
+                    color = Color(red = 63, green = 81, blue = 181, alpha = 255),
+                    fontSize = 16.sp
+                )
+                Text(
+                    text = " Register here",
+                    fontFamily = FontFamily.SansSerif,
+                    color = Color(red = 103, green = 58, blue = 183, alpha = 255),
+                    fontSize = 16.sp
+                )
+            }
+
+
+
+            Button(
+                onClick = { navController.navigate(ROUT_SCHOOL_LOGIN) },
+                colors = ButtonDefaults.buttonColors(Color.Transparent),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp),
+                shape = RoundedCornerShape(5.dp),
+            ) {
+                Text(
+                    text = "Wish to register your school? Click here",
+                    fontFamily = FontFamily.SansSerif,
+                    color = Color(red = 0, green = 0, blue = 0, alpha = 255),
+                    fontSize = 16.sp
+                )
+            }
         }
-    }
-
-
-
-
-
 }
+
+
+
+
+
+
+
 
 @Composable
 @Preview(showBackground = true)
 fun MainLoginPreview(){
-    MainLogin()
+    MainLogin(navController = rememberNavController())
 }
