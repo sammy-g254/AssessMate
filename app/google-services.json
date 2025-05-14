@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "865060914955",
+    "project_id": "assessmate-53f4d",
+    "storage_bucket": "assessmate-53f4d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:865060914955:android:405a30eff171d6d232440e",
+        "android_client_info": {
+          "package_name": "com.sammyg.assessmate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4JPjCp24YeGUKOn83g-PO4JklrYEa8cU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

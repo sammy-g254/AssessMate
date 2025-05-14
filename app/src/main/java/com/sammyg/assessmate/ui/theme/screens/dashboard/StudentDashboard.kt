@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -17,12 +18,20 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.sammyg.assessmate.R
+import com.sammyg.assessmate.data.auth.UserAuthViewModel
+import com.sammyg.assessmate.navigation.ROUT_ACCESS_ALL_ASSIGNMENTS
+import com.sammyg.assessmate.navigation.ROUT_STUDENT_MANAGE_ASSIGNMENTS
+import com.sammyg.assessmate.navigation.ROUT_STUDENT_NEW_ASSIGNMENTS
 import com.sammyg.assessmate.ui.theme.screens.dashboard.styling.DashboardCard
 import com.sammyg.assessmate.ui.theme.screens.dashboard.styling.TopDashboardNavBar
 
 
 @Composable
-fun StudentDashboard(navController: NavHostController) {
+fun StudentDashboard(navController: NavHostController, userAuthViewModel: UserAuthViewModel) {
+
+    val user = userAuthViewModel.currentUserData.value
+    val userName = user?.name ?: "Teacher"
+
     Scaffold(
         topBar = {
             TopDashboardNavBar(title = "Student's Dashboard")
@@ -41,7 +50,7 @@ fun StudentDashboard(navController: NavHostController) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "WELCOME BACK, /searchhow",
+                text = "WELCOME BACK, ${userName.uppercase()}",
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.SansSerif,
@@ -51,17 +60,17 @@ fun StudentDashboard(navController: NavHostController) {
             DashboardCard(
                 title1 = "NEW",
                 description1 = "Access your new assignments",
-                onClick = {},
+                onClick = {navController.navigate(ROUT_STUDENT_NEW_ASSIGNMENTS)},
             )
             DashboardCard(
                 title1 = "MANAGE",
                 description1 = "Manage your current assignments",
-                onClick = {},
+                onClick = {navController.navigate(ROUT_STUDENT_MANAGE_ASSIGNMENTS)},
             )
             DashboardCard(
                 title1 = "REVISION",
                 description1 = "Access all assignments",
-                onClick = {},
+                onClick = {navController.navigate(ROUT_ACCESS_ALL_ASSIGNMENTS)},
             )
 
         }
@@ -75,5 +84,5 @@ fun StudentDashboard(navController: NavHostController) {
 @Preview(showBackground = true)
 @Composable
 fun StudentDashboardPreview(){
-    StudentDashboard(navController = rememberNavController())
+    StudentDashboard(navController = rememberNavController(), userAuthViewModel = UserAuthViewModel(navController = rememberNavController(), context = LocalContext.current))
 }

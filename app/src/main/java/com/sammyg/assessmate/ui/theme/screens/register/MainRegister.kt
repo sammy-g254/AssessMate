@@ -54,7 +54,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.sammyg.assessmate.R
-import com.sammyg.assessmate.data.auth.AuthViewModel
+import com.sammyg.assessmate.data.auth.UserAuthViewModel
 import com.sammyg.assessmate.navigation.ROUT_MAIN_LOGIN
 import com.sammyg.assessmate.navigation.ROUT_SCHOOL_REGISTER
 
@@ -62,7 +62,10 @@ import com.sammyg.assessmate.navigation.ROUT_SCHOOL_REGISTER
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun MainRegister(navController: NavHostController){
+fun MainRegister(
+    navController: NavHostController,
+    authViewModel: UserAuthViewModel
+    ){
 
     val options = listOf("Student", "Teacher")
     var expanded by remember { mutableStateOf(false) }
@@ -212,10 +215,9 @@ fun MainRegister(navController: NavHostController){
         }
 
 
-        val context = LocalContext.current
-        val authViewModel = AuthViewModel(navController, context)
+
         Button(
-            onClick = { authViewModel.signup(name, email, password,confpassword)},
+            onClick = { authViewModel.mainsignup(name, email, schoolcode, password, confpassword, selectedOptionText)},
             colors = ButtonDefaults.buttonColors(Color(red = 103, green = 58, blue = 183, alpha = 255)),            modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 20.dp, end = 20.dp),
@@ -255,5 +257,5 @@ fun MainRegister(navController: NavHostController){
 @Composable
 @Preview(showBackground = true)
 fun MainRegisterPreview(){
-    MainRegister(navController = rememberNavController())
+    MainRegister(navController = rememberNavController(), authViewModel = UserAuthViewModel(navController = rememberNavController(), context = LocalContext.current))
 }

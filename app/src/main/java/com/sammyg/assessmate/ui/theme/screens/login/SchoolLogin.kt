@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -40,11 +41,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.sammyg.assessmate.R
+import com.sammyg.assessmate.data.auth.SchoolAuthViewModel
+import com.sammyg.assessmate.data.auth.UserAuthViewModel
 
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun SchoolLogin(navController: NavHostController){
+fun SchoolLogin(
+    navController: NavHostController,
+    schoolAuthViewModel: SchoolAuthViewModel
+    ){
     Column(
         modifier = Modifier
             .paint(
@@ -69,15 +75,15 @@ fun SchoolLogin(navController: NavHostController){
         )
         Spacer(modifier = Modifier.height(10.dp))
 
-        var schoolcode by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
+        var schoolemail by remember { mutableStateOf("") }
+        var schoolpassword by remember { mutableStateOf("") }
 
         OutlinedTextField(
-            value = schoolcode,
-            onValueChange = {schoolcode = it},
-            label = { Text(text = "School Code", fontFamily = FontFamily.SansSerif)},
+            value = schoolemail,
+            onValueChange = {schoolemail = it},
+            label = { Text(text = "School Email", fontFamily = FontFamily.SansSerif)},
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            leadingIcon = { Icon(imageVector = Icons.Default.LocationOn, contentDescription = "")},
+            leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "")},
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 20.dp, end = 20.dp),
@@ -88,8 +94,8 @@ fun SchoolLogin(navController: NavHostController){
 
 
         OutlinedTextField(
-            value = password,
-            onValueChange = {password = it},
+            value = schoolpassword,
+            onValueChange = {schoolpassword = it},
             label = { Text(text = "Password", fontFamily = FontFamily.SansSerif)},
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "") },
@@ -109,7 +115,7 @@ fun SchoolLogin(navController: NavHostController){
 
 
         Button(
-            onClick = { },
+            onClick = { schoolAuthViewModel.schoolsignin(schoolemail, schoolpassword) },
             colors = ButtonDefaults.buttonColors(Color(red = 103, green = 58, blue = 183, alpha = 255),),
             shape = RoundedCornerShape(5.dp),
             modifier = Modifier
@@ -135,5 +141,5 @@ fun SchoolLogin(navController: NavHostController){
 @Composable
 @Preview(showBackground = true)
 fun SchoolLoginPreview(){
-    SchoolLogin(navController = rememberNavController())
+    SchoolLogin(navController = rememberNavController(), schoolAuthViewModel = SchoolAuthViewModel(navController = rememberNavController(), context = LocalContext.current))
 }

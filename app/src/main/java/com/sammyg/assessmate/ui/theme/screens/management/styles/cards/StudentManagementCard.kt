@@ -1,5 +1,6 @@
 package com.sammyg.assessmate.ui.theme.screens.management.styles.cards
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,27 +13,27 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import com.sammyg.assessmate.models.database.Assignment
 import com.sammyg.assessmate.ui.theme.Purple
 
 @Composable
 fun StudentManagementCard(
-    timeCreated: String,
-    title2: String,
-    teacherName: String,
-    className: String,
-    dueDate: String
+    assignment: Assignment,
+    onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(150.dp)
-            .clickable { onClick() },
+            .clickable { onClick() }
+            .border(3.dp, Purple, shape = RoundedCornerShape(20.dp)),
         colors = CardDefaults.cardColors(containerColor = Color(
             red = 255,
             green = 255,
             blue = 255,
             alpha = 143
         ),),
+
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(8.dp)
     ) {
@@ -40,8 +41,8 @@ fun StudentManagementCard(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
-            contentAlignment = Alignment.Center // Center the column in the card
-        ) {
+            contentAlignment = Alignment.Center, // Center the column in the card
+            ) {
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
@@ -50,15 +51,15 @@ fun StudentManagementCard(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = timeCreated, fontSize = 16.sp,color = Color.Gray)
-                    Text(text = "Due: $dueDate", fontSize = 16.sp,color = Color.Red)
+                    Text(text = assignment.createdTime, fontSize = 16.sp,color = Color.Gray)
+                    Text(text = "Due: ${assignment.dueDate}", fontSize = 16.sp,color = Color.Red)
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Title
                 Text(
-                    text = title2,
+                    text = assignment.assigntitle,
                     fontSize = 30.sp,
                     fontWeight = FontWeight.Bold,
                     color = Purple
@@ -71,27 +72,31 @@ fun StudentManagementCard(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = "By: $teacherName", fontSize = 16.sp,color = Color.Black)
-                    Text(text = className, fontSize = 16.sp,color = Color.Black)
+                    Text(text = "By: ${assignment.teacher}", fontSize = 16.sp,color = Color.Black)
+                    Text(text = assignment.className, fontSize = 16.sp,color = Color.Black)
                 }
             }
         }
     }
 }
 
-fun onClick() {
-    TODO("Not yet implemented")
-}
 
 @Preview(showBackground = true)
 @Composable
 fun StudentManagementCardPreview() {
-    StudentManagementCard(
-        timeCreated = "9:00 AM",
-        title2 = "Math Homework",
-        teacherName = "Mr. Smith",
+    val sampleAssignment = Assignment(
+        teacher = "Mr. Smith",
         className = "Grade 10 - A",
-        dueDate = "May 10"
+        assigntitle = "Math Homework",
+        assigndescription = "Solve the equations",
+        dueDate = "May 10",
+        fileURL = "https://example.com/file.pdf",
+        createdTime = "9:00 AM",
+        assignId = "sample123"
+    )
+
+    StudentManagementCard(
+        assignment = sampleAssignment,
+        onClick = {}
     )
 }
-

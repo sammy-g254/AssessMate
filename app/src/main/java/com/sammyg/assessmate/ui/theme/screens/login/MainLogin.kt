@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -40,13 +41,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.sammyg.assessmate.R
+import com.sammyg.assessmate.data.auth.UserAuthViewModel
 import com.sammyg.assessmate.navigation.ROUT_MAIN_REGISTER
 import com.sammyg.assessmate.navigation.ROUT_SCHOOL_LOGIN
+import com.sammyg.assessmate.navigation.ROUT_SCHOOL_REGISTER
 
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun MainLogin(navController: NavHostController){
+fun MainLogin(
+        navController: NavHostController,
+        authViewModel: UserAuthViewModel
+        ){
         Column(
             modifier = Modifier
                 .paint(
@@ -111,9 +117,8 @@ fun MainLogin(navController: NavHostController){
 
 
 
-
             Button(
-                onClick = { },
+                onClick = { authViewModel.mainsignin(email, password) },
                 colors = ButtonDefaults.buttonColors(
                     Color(
                         red = 103,
@@ -162,7 +167,7 @@ fun MainLogin(navController: NavHostController){
 
 
             Button(
-                onClick = { navController.navigate(ROUT_SCHOOL_LOGIN) },
+                onClick = { navController.navigate(ROUT_SCHOOL_REGISTER) },
                 colors = ButtonDefaults.buttonColors(Color.Transparent),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -170,7 +175,7 @@ fun MainLogin(navController: NavHostController){
                 shape = RoundedCornerShape(5.dp),
             ) {
                 Text(
-                    text = "Wish to register your school? Click here",
+                    text = "Wish to manage your school? Click here",
                     fontFamily = FontFamily.SansSerif,
                     color = Color(red = 0, green = 0, blue = 0, alpha = 255),
                     fontSize = 16.sp
@@ -189,5 +194,5 @@ fun MainLogin(navController: NavHostController){
 @Composable
 @Preview(showBackground = true)
 fun MainLoginPreview(){
-    MainLogin(navController = rememberNavController())
+    MainLogin(navController = rememberNavController(), authViewModel = UserAuthViewModel(navController = rememberNavController(), context = LocalContext.current))
 }

@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -21,11 +22,19 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.sammyg.assessmate.R
+import com.sammyg.assessmate.data.auth.SchoolAuthViewModel
+import com.sammyg.assessmate.navigation.ROUT_SCHOOL_MANAGE_ASSIGNMENTS
+import com.sammyg.assessmate.navigation.ROUT_SCHOOL_MANAGE_STUDENTS
+import com.sammyg.assessmate.navigation.ROUT_SCHOOL_MANAGE_TEACHERS
 import com.sammyg.assessmate.ui.theme.screens.dashboard.styling.DashboardCard
 import com.sammyg.assessmate.ui.theme.screens.dashboard.styling.TopDashboardNavBar
 
 @Composable
-fun SchoolDashboard(navController: NavHostController) {
+fun SchoolDashboard(navController: NavHostController, schoolAuthViewModel: SchoolAuthViewModel) {
+
+    val school = schoolAuthViewModel.currentSchoolData.value
+    val schoolName = school?.schoolname ?: "School"
+
     Scaffold(
         topBar = {
             TopDashboardNavBar(title = "School Dashboard")
@@ -44,7 +53,7 @@ fun SchoolDashboard(navController: NavHostController) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "SCHOOL MANAGEMENT",
+                text = "${schoolName.uppercase()} MANAGEMENT",
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.SansSerif,
@@ -54,17 +63,17 @@ fun SchoolDashboard(navController: NavHostController) {
             DashboardCard(
                 title1 = "STUDENTS",
                 description1 = "Manage your students",
-                onClick = {},
+                onClick = {navController.navigate(ROUT_SCHOOL_MANAGE_STUDENTS)},
             )
             DashboardCard(
                 title1 = "TEACHERS",
                 description1 = "Manage your teachers",
-                onClick = {},
+                onClick = {navController.navigate(ROUT_SCHOOL_MANAGE_TEACHERS)},
             )
             DashboardCard(
                 title1 = "ASSIGNMENTS",
                 description1 = "Manage all assignments",
-                onClick = {},
+                onClick = {navController.navigate(ROUT_SCHOOL_MANAGE_ASSIGNMENTS)},
             )
 
         }
@@ -78,5 +87,5 @@ fun SchoolDashboard(navController: NavHostController) {
 @Preview(showBackground = true)
 @Composable
 fun SchoolDashboardPreview(){
-    SchoolDashboard(navController = rememberNavController())
+    SchoolDashboard(navController = rememberNavController(), schoolAuthViewModel = SchoolAuthViewModel(navController = rememberNavController(), context = LocalContext.current))
 }

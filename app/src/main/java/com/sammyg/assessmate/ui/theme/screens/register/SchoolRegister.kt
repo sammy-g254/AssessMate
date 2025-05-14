@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddLocation
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lock
@@ -23,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,18 +44,25 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.sammyg.assessmate.R
+import com.sammyg.assessmate.data.auth.SchoolAuthViewModel
+import com.sammyg.assessmate.data.auth.SchoolCodeGenerator
 import com.sammyg.assessmate.navigation.ROUT_SCHOOL_LOGIN
+import com.sammyg.assessmate.ui.theme.Purple
 
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun SchoolRegister(navController: NavHostController){
+fun SchoolRegister(
+    navController: NavHostController,
+    schoolauthViewModel: SchoolAuthViewModel
+){
     Column(
         modifier = Modifier
             .paint(
@@ -81,11 +91,11 @@ fun SchoolRegister(navController: NavHostController){
         )
         Spacer(modifier = Modifier.height(30.dp))
 
-        var schoolname by remember { mutableStateOf("") }
-        var schoolcode by remember { mutableStateOf("") }
+        var schoolname by remember { mutableStateOf("")}
         var schoolemail by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
-        var confpassword by remember { mutableStateOf("") }
+        val schoolCodeState: MutableState<String> = remember { mutableStateOf("") }
+        var schoolpassword by remember { mutableStateOf("") }
+        var schoolconfpassword by remember { mutableStateOf("") }
 
         OutlinedTextField(
             value = schoolname,
@@ -116,23 +126,61 @@ fun SchoolRegister(navController: NavHostController){
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        OutlinedTextField(
-            value = schoolcode,
-            onValueChange = { schoolcode = it},
-            label = { Text(text = "School Code", fontFamily = FontFamily.SansSerif)},
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            leadingIcon = { Icon(imageVector = Icons.Default.Place, contentDescription = "") },
+
+        Row(
+            modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
+            verticalAlignment = Alignment.CenterVertically)
+        {
+            OutlinedTextField(
+                value = schoolCodeState.value,
+                onValueChange = {},
+                label = { Text(text = "School Code", fontFamily = FontFamily.SansSerif) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                leadingIcon = { Icon(imageVector = Icons.Default.Place, contentDescription = "") },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 10.dp),
+                shape = RoundedCornerShape(5.dp),
+                readOnly = true
+            )
+
+            Button(
+                onClick = {
+                    SchoolCodeGenerator.generateSchoolCode { schoolCode ->
+                        schoolCodeState.value = schoolCode
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(Purple),
+                modifier = Modifier
+                    .height(56.dp),
+                shape = RoundedCornerShape(5.dp),
+            ) {
+                Text(text = "GENERATE")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Text(
+            text = "The code generated above is your school code. This will be used by both students and teachers to register to your specific school.",
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.SansSerif,
+            color = Color(red = 103, green = 58, blue = 183, alpha = 255),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 20.dp, end = 20.dp),
-            shape = RoundedCornerShape(5.dp)
-
+            textAlign = TextAlign.Center,
         )
 
         Spacer(modifier = Modifier.height(10.dp))
+
+
         OutlinedTextField(
-            value = password,
-            onValueChange = {password = it},
+            value = schoolpassword,
+            onValueChange = {schoolpassword = it},
             label = { Text(text = "Password", fontFamily = FontFamily.SansSerif)},
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "") },
@@ -147,8 +195,8 @@ fun SchoolRegister(navController: NavHostController){
         Spacer(modifier = Modifier.height(10.dp))
 
         OutlinedTextField(
-            value = confpassword,
-            onValueChange = {confpassword = it},
+            value = schoolconfpassword,
+            onValueChange = {schoolconfpassword = it},
             label = { Text(text = "Confirm Password", fontFamily = FontFamily.SansSerif)},
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "") },
@@ -165,11 +213,10 @@ fun SchoolRegister(navController: NavHostController){
 
 
 
-        val context = LocalContext.current
-        //val authViewModel = AuthViewModel(navController, context)
         Button(
-            onClick = { /*authViewModel.signup(name, email, password,confpassword) */},
-            colors = ButtonDefaults.buttonColors(Color(red = 103, green = 58, blue = 183, alpha = 255)),            modifier = Modifier
+            onClick = { schoolauthViewModel.schoolsignup(schoolname, schoolemail, schoolCodeState.value, schoolpassword, schoolconfpassword)},
+            colors = ButtonDefaults.buttonColors(Color(red = 103, green = 58, blue = 183, alpha = 255)),
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 20.dp, end = 20.dp),
             shape = RoundedCornerShape(5.dp)) {
@@ -205,5 +252,5 @@ fun SchoolRegister(navController: NavHostController){
 @Composable
 @Preview(showBackground = true)
 fun SchoolRegisterPreview(){
-    SchoolRegister(navController = rememberNavController())
+    SchoolRegister(navController = rememberNavController(), schoolauthViewModel = SchoolAuthViewModel(navController = rememberNavController(), context = LocalContext.current))
 }

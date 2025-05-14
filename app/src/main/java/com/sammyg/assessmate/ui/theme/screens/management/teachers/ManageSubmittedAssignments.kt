@@ -15,13 +15,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.sammyg.assessmate.R
 import com.sammyg.assessmate.ui.theme.Purple
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ManageSubmittedAssignments() {
+fun ManageSubmittedAssignments(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -65,5 +67,5 @@ fun ManageSubmittedAssignments() {
 @Preview(showBackground = true)
 @Composable
 fun ManageSubmittedAssignmentsPreview(){
-    ManageSubmittedAssignments()
+    ManageSubmittedAssignments(navController = rememberNavController())
 }
