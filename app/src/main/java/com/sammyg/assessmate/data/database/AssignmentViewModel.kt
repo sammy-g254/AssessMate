@@ -18,11 +18,11 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 
 class AssignmentViewModel(
+    var navController: NavHostController,
     var context: Context,
     var userAuthViewModel: UserAuthViewModel
 ) {
 
-    val isUserLoggedIn = FirebaseAuth.getInstance().currentUser != null
 
     private val databaseReference = FirebaseDatabase.getInstance().getReference("Assignments")
 
@@ -36,6 +36,7 @@ class AssignmentViewModel(
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser == null) {
             // Redirect if not logged in
+            navController.navigate(ROUT_MAIN_LOGIN)
         } else {
             // First get school name
             SessionManager.fetchCurrentUserSchoolName { schoolName ->
@@ -52,13 +53,10 @@ class AssignmentViewModel(
                                     createdAssignments.clear()
 
                                     snapshot.children.forEach { child ->
-                                        // Now explicitly dive into the "info" child under each <assignId>
-                                        val infoSnap = child.child("info")
-                                        val a = infoSnap.getValue(Assignment::class.java)
+                                        // READ straight from the assignment node itself
+                                        val a = child.getValue(Assignment::class.java)
                                         if (a != null) {
                                             _assignments.add(a)
-
-                                            // Filter by current teacher
                                             if (a.teacher == currentUsername) {
                                                 createdAssignments.add(a)
                                             }
@@ -127,7 +125,7 @@ class AssignmentViewModel(
 
                 // Save assignment in Firebase under <schoolname>/Assignments/<assignId>
                 val assignmentRef = FirebaseDatabase.getInstance()
-                    .getReference("$schoolName/Assignments/$assignId/info")
+                    .getReference("$schoolName/Assignments/$assignId")
                 assignmentRef.setValue(assignment).addOnCompleteListener {
                     if (it.isSuccessful) {
                         Toast.makeText(
@@ -164,7 +162,7 @@ class AssignmentViewModel(
         SessionManager.fetchCurrentUserSchoolName { schoolName ->
             if (schoolName != null) {
                 val assignmentRef = FirebaseDatabase.getInstance()
-                    .getReference("$schoolName/Assignments/$assignId/info")
+                    .getReference("$schoolName/Assignments/$assignId")
 
                 val updates = mapOf<String, Any>(
                     "className" to className,
@@ -211,5 +209,3 @@ class AssignmentViewModel(
         }
     }
 }
-
-

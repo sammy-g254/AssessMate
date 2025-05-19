@@ -216,13 +216,13 @@ fun CreateAssignment(
                             } else {
                                 // Proceed with assignment creation
                                 assignmentViewModel.createAssignment(
-                                    teacher, // Teacher name
                                     className,
                                     assigntitle,
                                     assigndescription,
                                     dueDate,
                                     fileURL,
-                                    createdTime // Pass it here
+                                    createdTime, // Pass it here
+                                    teacher!!, // Teacher name
                                 )
 
                                 navController.navigate(ROUT_TEACHER_DASHBOARD)

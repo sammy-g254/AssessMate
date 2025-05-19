@@ -3,11 +3,14 @@ package com.sammyg.assessmate.data.auth
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.sammyg.assessmate.data.database.SessionManager
 import com.sammyg.assessmate.models.auth.User
 import com.sammyg.assessmate.navigation.ROUT_MAIN_LOGIN
 import com.sammyg.assessmate.navigation.ROUT_MAIN_REGISTER
@@ -16,6 +19,8 @@ import com.sammyg.assessmate.navigation.ROUT_TEACHER_DASHBOARD
 
 class UserAuthViewModel(var navController: NavController, var context: Context){
     val mAuth: FirebaseAuth
+
+
 
     init {
         mAuth = FirebaseAuth.getInstance()
@@ -173,6 +178,7 @@ class UserAuthViewModel(var navController: NavController, var context: Context){
             popUpTo(0)  // clear backstack so user can’t hit “back” into the app
         }
     }
+
 
 
 

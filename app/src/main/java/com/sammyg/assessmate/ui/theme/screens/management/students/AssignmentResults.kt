@@ -67,7 +67,9 @@ fun AssignmentResults(
                             .await()
                     }
 
-                    snapshot.children.mapNotNull { userSnap ->
+                    snapshot.children
+                        .filter { it.key != "info" }
+                        .mapNotNull { userSnap ->
                         val userName = userSnap.key ?: return@mapNotNull null
                         val reportfileURL = userSnap.child("reportfileURL").getValue(String::class.java)
                         if (!reportfileURL.isNullOrBlank()) {

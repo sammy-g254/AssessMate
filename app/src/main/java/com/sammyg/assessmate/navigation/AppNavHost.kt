@@ -24,6 +24,7 @@ import com.sammyg.assessmate.ui.theme.screens.management.global.AccessAllAssignm
 import com.sammyg.assessmate.ui.theme.screens.management.students.AssignmentResults
 import com.sammyg.assessmate.ui.theme.screens.management.students.CurrentAssignments
 import com.sammyg.assessmate.ui.theme.screens.management.teachers.CreateAssignment
+import com.sammyg.assessmate.ui.theme.screens.management.teachers.ManageCreatedAssignments
 import com.sammyg.assessmate.ui.theme.screens.management.teachers.ManageSubmittedAssignments
 import com.sammyg.assessmate.ui.theme.screens.management.teachers.cards.UpdateAssignment
 import com.sammyg.assessmate.ui.theme.screens.register.MainRegister
@@ -41,7 +42,7 @@ fun AppNavHost(
     val context = LocalContext.current
     val authViewModel = remember { UserAuthViewModel(navController, context) }
     val schoolauthViewModel = remember { SchoolAuthViewModel(navController, context) }
-    val assignmentViewModel: AssignmentViewModel = viewModel()
+    val assignmentViewModel = remember { AssignmentViewModel(navController, context, authViewModel) }
 
     NavHost(
         navController = navController,
@@ -49,7 +50,7 @@ fun AppNavHost(
         modifier = modifier
     ) {
         composable(ROUT_SPLASH) {
-            SplashScreen(navController, assignmentViewModel)
+            SplashScreen(navController, authViewModel)
         }
 
         composable(ROUT_MAIN_LOGIN) {
@@ -113,7 +114,7 @@ fun AppNavHost(
         }
 
         composable(ROUT_TEACHER_MANAGE_CREATED_ASSIGNMENTS) {
-            ManageSubmittedAssignments(navController, assignmentViewModel, authViewModel)
+            ManageCreatedAssignments(navController, assignmentViewModel, authViewModel)
         }
 
         composable(ROUT_ABOUT) {

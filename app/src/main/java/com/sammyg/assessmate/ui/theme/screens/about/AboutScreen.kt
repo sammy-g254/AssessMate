@@ -37,7 +37,11 @@ fun About(
 ) {
     Scaffold(
         topBar = {
-            GlobalTopNavBar(title = "About")
+            GlobalTopNavBar(
+                title = "About",
+                onClose = {navController.popBackStack()}
+                    )
+
         }
     ) { paddingValues ->
         Column(

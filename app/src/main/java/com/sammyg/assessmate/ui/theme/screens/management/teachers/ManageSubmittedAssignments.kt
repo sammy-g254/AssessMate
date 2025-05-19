@@ -67,7 +67,9 @@ fun ManageSubmittedAssignments(
                     .get()
                     .await()
             }
-            snapshot.children.mapNotNull { it.key }
+            snapshot.children
+                .filter { it.key != "info" }               // ← drop the extra layer
+                .mapNotNull { it.key }
                 .map { userName -> assignment to userName }
         }
     }
