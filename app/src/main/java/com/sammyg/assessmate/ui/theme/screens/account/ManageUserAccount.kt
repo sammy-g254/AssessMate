@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,16 +39,18 @@ import com.sammyg.assessmate.ui.theme.Purple
 import com.sammyg.assessmate.ui.theme.transWhite
 
 @Composable
-fun ManageSchoolAccount(
+fun ManageUserAccount(
     navController: NavController,
     userAuthViewModel: UserAuthViewModel,
     schoolAuthViewModel: SchoolAuthViewModel
 ) {
 
+    val user = userAuthViewModel.currentUserData.value
+    val userName = user?.name ?: "Unknown user"
+    val email = user?.email ?: "Unknown email"
     val school = schoolAuthViewModel.currentSchoolData.value
     val schoolname = school?.schoolname ?: "School"
-    val schoolemail = school?.schoolemail ?: "Unknown email"
-    val schoolCode = school?.schoolCode ?: "Unknown school code"
+    val schoolCode = user?.schoolCode ?: "Unknown school code"
 
     Scaffold(
         topBar = {
@@ -71,7 +74,7 @@ fun ManageSchoolAccount(
         ) {
 
             Text(
-                text = schoolname.uppercase(),
+                text = userName.uppercase(),
                 fontSize = 40.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.SansSerif,
@@ -96,6 +99,7 @@ fun ManageSchoolAccount(
                         )
                     ) {
                         Text("Email")
+                        Text("School")
                         Text("School Code")
                     }
                 }
@@ -115,6 +119,7 @@ fun ManageSchoolAccount(
                     ) {
                         Text(":")
                         Text(":")
+                        Text(":")
                     }
                 }
 
@@ -129,7 +134,8 @@ fun ManageSchoolAccount(
                             color = Color.DarkGray
                         )
                     ) {
-                        Text(text = schoolemail)
+                        Text(text = email)
+                        Text(text = schoolname)
                         Text(text = schoolCode)
                     }
                 }
@@ -142,7 +148,7 @@ fun ManageSchoolAccount(
 
 
             Button(
-                onClick = {schoolAuthViewModel.logout()},
+                onClick = {userAuthViewModel.logout()},
                 shape = RectangleShape,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = transWhite,
@@ -166,6 +172,6 @@ fun ManageSchoolAccount(
 
 /*@Preview(showBackground = true)
 @Composable
-fun ManageSchoolAccountPreview(){
-    ManageSchoolAccount()
+fun ManageUserAccountPreview(){
+    ManageUserAccount()
 }*/

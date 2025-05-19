@@ -4,8 +4,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,21 +31,45 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.sammyg.assessmate.R
 import com.sammyg.assessmate.data.auth.SchoolAuthViewModel
-import com.sammyg.assessmate.navigation.ROUT_SCHOOL_MANAGE_ASSIGNMENTS
-import com.sammyg.assessmate.navigation.ROUT_SCHOOL_MANAGE_STUDENTS
-import com.sammyg.assessmate.navigation.ROUT_SCHOOL_MANAGE_TEACHERS
-import com.sammyg.assessmate.ui.theme.screens.dashboard.styling.DashboardCard
-import com.sammyg.assessmate.ui.theme.screens.dashboard.styling.TopDashboardNavBar
+import com.sammyg.assessmate.navigation.ROUT_ABOUT
+import com.sammyg.assessmate.navigation.ROUT_MANAGE_SCHOOL_ACCOUNT
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SchoolDashboard(navController: NavHostController, schoolAuthViewModel: SchoolAuthViewModel) {
+fun SchoolDashboard(
+    navController: NavHostController,
+    schoolAuthViewModel: SchoolAuthViewModel
+) {
 
     val school = schoolAuthViewModel.currentSchoolData.value
     val schoolName = school?.schoolname ?: "School"
 
     Scaffold(
         topBar = {
-            TopDashboardNavBar(title = "School Dashboard")
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "School Info",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+                },
+                actions = {
+                    IconButton(onClick = {navController.navigate(ROUT_MANAGE_SCHOOL_ACCOUNT)}) {
+                        Icon(Icons.Default.AccountCircle, contentDescription = "Manage Account")
+                    }
+                    IconButton(onClick = {navController.navigate(ROUT_ABOUT)}) {
+                        Icon(Icons.Default.Info, contentDescription = "About")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF673AB7),
+                    titleContentColor = Color.White,
+                    navigationIconContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                )
+            )
         }
     ) { paddingValues ->
         Column(
@@ -53,28 +85,16 @@ fun SchoolDashboard(navController: NavHostController, schoolAuthViewModel: Schoo
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "${schoolName.uppercase()} MANAGEMENT",
+                text = "${schoolName.uppercase()} ",
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.SansSerif,
                 color = Color(red = 103, green = 58, blue = 183, alpha = 255),
             )
-            //Add cards
-            DashboardCard(
-                title1 = "STUDENTS",
-                description1 = "Manage your students",
-                onClick = {navController.navigate(ROUT_SCHOOL_MANAGE_STUDENTS)},
-            )
-            DashboardCard(
-                title1 = "TEACHERS",
-                description1 = "Manage your teachers",
-                onClick = {navController.navigate(ROUT_SCHOOL_MANAGE_TEACHERS)},
-            )
-            DashboardCard(
-                title1 = "ASSIGNMENTS",
-                description1 = "Manage all assignments",
-                onClick = {navController.navigate(ROUT_SCHOOL_MANAGE_ASSIGNMENTS)},
-            )
+
+
+            //Display school information here
+
 
         }
     }

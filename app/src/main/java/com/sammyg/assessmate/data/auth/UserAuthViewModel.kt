@@ -78,9 +78,15 @@ class UserAuthViewModel(var navController: NavController, var context: Context){
                                 if (saveTask.isSuccessful) {
                                     Toast.makeText(context, "Registered Successfully", Toast.LENGTH_SHORT).show()
                                     if (studentOrTeacher.equals("Student", true)) {
-                                        navController.navigate(ROUT_STUDENT_DASHBOARD)
+                                        navController.navigate(ROUT_STUDENT_DASHBOARD){
+                                            popUpTo(0) { inclusive = true } // clears entire backstack
+                                            launchSingleTop = true // avoids creating multiple copies of the same destination
+                                        }
                                     } else {
-                                        navController.navigate(ROUT_TEACHER_DASHBOARD)
+                                        navController.navigate(ROUT_TEACHER_DASHBOARD){
+                                            popUpTo(0) { inclusive = true } // clears entire backstack
+                                            launchSingleTop = true // avoids creating multiple copies of the same destination
+                                        }
                                     }
                                 }
                             }
@@ -126,7 +132,10 @@ class UserAuthViewModel(var navController: NavController, var context: Context){
                                 }
                                 Toast.makeText(context, "Welcome Student", Toast.LENGTH_SHORT)
                                     .show()
-                                navController.navigate(ROUT_STUDENT_DASHBOARD)
+                                navController.navigate(ROUT_STUDENT_DASHBOARD){
+                                    popUpTo(0) { inclusive = true } // clears entire backstack
+                                    launchSingleTop = true // avoids creating multiple copies of the same destination
+                                }
                                 return@addOnSuccessListener
                             }
                         }
@@ -141,7 +150,10 @@ class UserAuthViewModel(var navController: NavController, var context: Context){
                                 }
                                 Toast.makeText(context, "Welcome Teacher", Toast.LENGTH_SHORT)
                                     .show()
-                                navController.navigate(ROUT_TEACHER_DASHBOARD)
+                                navController.navigate(ROUT_TEACHER_DASHBOARD){
+                                    popUpTo(0) { inclusive = true } // clears entire backstack
+                                    launchSingleTop = true // avoids creating multiple copies of the same destination
+                                }
                                 return@addOnSuccessListener
                             }
                         }
@@ -157,8 +169,13 @@ class UserAuthViewModel(var navController: NavController, var context: Context){
 
     fun logout() {
         mAuth.signOut()
-        navController.navigate(ROUT_MAIN_LOGIN)
+        navController.navigate(ROUT_MAIN_LOGIN) {
+            popUpTo(0)  // clear backstack so user can’t hit “back” into the app
+        }
     }
+
+
+
 
     fun isLoggedIn(): Boolean = mAuth.currentUser != null
 }

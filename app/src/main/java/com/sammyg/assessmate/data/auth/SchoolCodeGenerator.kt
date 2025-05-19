@@ -37,8 +37,9 @@ object SchoolCodeGenerator {
     private fun isCodeExists(schoolCode: String): Boolean {
         // Check if the generated school code exists in Firebase
         var exists = false
-        database.child("schools").orderByChild("schoolCode").equalTo(schoolCode)
-            .get()
+        database.root
+            .orderByChild("info/schoolCode")
+            .equalTo(schoolCode)            .get()
             .addOnSuccessListener { snapshot ->
                 if (snapshot.exists()) {
                     exists = true

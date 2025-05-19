@@ -140,8 +140,6 @@ fun MainLogin(
 
 
 
-
-
             Button(
                 onClick = { navController.navigate(ROUT_MAIN_REGISTER) },
                 colors = ButtonDefaults.buttonColors(Color.Transparent),

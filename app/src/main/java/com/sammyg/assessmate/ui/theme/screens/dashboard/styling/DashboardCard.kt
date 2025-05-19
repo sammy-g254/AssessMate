@@ -47,7 +47,7 @@ fun DashboardCard(
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
                 Text(
-                    text = "$title1",
+                    text = title1,
                     style = TextStyle(
                         fontSize = 40.sp, // custom size for title
                         fontWeight = FontWeight.Bold
@@ -56,7 +56,7 @@ fun DashboardCard(
                     textAlign = TextAlign.Center,
                 )
                 Text(
-                    text = "$description1",
+                    text = description1,
                     style = TextStyle(
                         fontSize = 25.sp // custom size for description
                     ),

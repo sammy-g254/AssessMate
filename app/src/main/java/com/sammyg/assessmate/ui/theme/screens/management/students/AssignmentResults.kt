@@ -1,6 +1,8 @@
-package com.sammyg.assessmate.ui.theme.screens.management.teachers
+package com.sammyg.assessmate.ui.theme.screens.management.students
 
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -32,8 +34,7 @@ import com.sammyg.assessmate.data.database.AssignmentViewModel
 import com.sammyg.assessmate.data.database.SessionManager
 import com.sammyg.assessmate.models.database.Assignment
 import com.sammyg.assessmate.ui.theme.Purple
-import com.sammyg.assessmate.ui.theme.screens.management.teachers.cards.SubmittedAssignmentCard
-import com.sammyg.assessmate.ui.theme.screens.management.teachers.cards.UploadResultsDialog
+import com.sammyg.assessmate.ui.theme.screens.management.students.cards.AssignmentResultsCard
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import androidx.compose.foundation.lazy.items
@@ -42,88 +43,79 @@ import androidx.compose.foundation.lazy.items
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ManageSubmittedAssignments(
+fun AssignmentResults(
     navController: NavHostController,
     assignmentViewModel: AssignmentViewModel,
     authViewModel: UserAuthViewModel
 ) {
     val context = LocalContext.current
     var schoolName by remember { mutableStateOf<String?>(null) }
-    var selectedAssignment by remember { mutableStateOf<Assignment?>(null) }
-    var selectedUserName by remember { mutableStateOf<String?>(null) }
 
-    // 1️⃣ Fetch current school once
+    var submissions by remember { mutableStateOf<List<Triple<Assignment, String, String>>>(emptyList()) }
+
+    // Fetch the current school name once
     LaunchedEffect(Unit) {
-        SessionManager.fetchCurrentUserSchoolName { schoolName = it }
-    }
+        SessionManager.fetchCurrentUserSchoolName { sn ->
+            schoolName = sn
+            if (sn != null) {
+                val newList = assignmentViewModel.createdAssignments.flatMap { assignment ->
+                    val assignId = assignment.assignId
+                    val snapshot = runBlocking {
+                        FirebaseDatabase.getInstance()
+                            .getReference("$sn/Assignments/$assignId")
+                            .get()
+                            .await()
+                    }
 
-    // 2️⃣ Build flat list of (assignment, userName)
-    val submissions: List<Pair<Assignment, String>> = remember(schoolName, assignmentViewModel.createdAssignments) {
-        val sn = schoolName ?: return@remember emptyList()
-        assignmentViewModel.createdAssignments.flatMap { assignment ->
-            val snapshot = runBlocking {
-                FirebaseDatabase.getInstance()
-                    .getReference("$sn/Assignments/${assignment.assignId}")
-                    .get()
-                    .await()
+                    snapshot.children.mapNotNull { userSnap ->
+                        val userName = userSnap.key ?: return@mapNotNull null
+                        val reportfileURL = userSnap.child("reportfileURL").getValue(String::class.java)
+                        if (!reportfileURL.isNullOrBlank()) {
+                            Triple(assignment, userName, reportfileURL)
+                        } else null
+                    }
+                }
+                submissions = newList
             }
-            snapshot.children.mapNotNull { it.key }
-                .map { userName -> assignment to userName }
         }
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Manage Submitted Assignments", fontWeight = FontWeight.Bold) },
+                title = { Text("Assignment Results", fontWeight = FontWeight.Bold) },
                 actions = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.Close, contentDescription = "Close")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor        = Purple,
-                    titleContentColor     = Color.White,
-                    actionIconContentColor= Color.White
+                    containerColor = Purple,
+                    titleContentColor = Color.White,
+                    actionIconContentColor = Color.White
                 )
             )
         }
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
-                .paint(painter = painterResource(R.drawable.img2), contentScale = ContentScale.Crop)
+                .paint(painterResource(R.drawable.img2), contentScale = ContentScale.Crop)
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            items(submissions) { (assignment, userName) ->
-                SubmittedAssignmentCard(
+            items(submissions) { (assignment, userName, reportfileURL) ->
+                AssignmentResultsCard(
                     assignment = assignment,
                     userName = userName,
-                    navController = navController,
-                    authViewModel = authViewModel,
-                    onUploadClick = {
-                        selectedAssignment = assignment
-                        selectedUserName = userName
+                    reportfileURL = reportfileURL,
+                    onDownloadClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(reportfileURL))
+                        context.startActivity(intent)
                     }
                 )
-            }
-        }
-
-        // 3️⃣ Show dialog when a submission is selected
-        if (selectedAssignment != null && selectedUserName != null && schoolName != null) {
-            UploadResultsDialog(
-                fileUrlInitial = "",
-                schoolName     = schoolName!!,
-                assignId       = selectedAssignment!!.assignId,
-                userName       = selectedUserName!!,
-                authViewModel  = authViewModel,
-                context        = context
-            ) {
-                selectedAssignment = null
-                selectedUserName = null
             }
         }
     }
@@ -133,9 +125,8 @@ fun ManageSubmittedAssignments(
 
 
 
-
 /*@Preview(showBackground = true)
 @Composable
-fun ManageSubmittedAssignmentsPreview(){
-    ManageSubmittedAssignments(navController = rememberNavController())
+fun AssignmentResultsPreview(){
+    AssignmentResults(navController = rememberNavController())
 }*/

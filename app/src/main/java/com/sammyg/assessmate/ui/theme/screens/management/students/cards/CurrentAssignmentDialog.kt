@@ -1,4 +1,4 @@
-package com.sammyg.assessmate.ui.theme.screens.management.students.detailedCards
+package com.sammyg.assessmate.ui.theme.screens.management.students.cards
 
 import android.content.Intent
 import android.net.Uri
@@ -19,19 +19,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import com.sammyg.assessmate.data.auth.UserAuthViewModel
-import com.sammyg.assessmate.data.database.SessionManager
-import com.sammyg.assessmate.navigation.ROUT_STUDENT_MANAGE_ASSIGNMENTS
 import com.sammyg.assessmate.ui.theme.Purple
+import androidx.compose.runtime.*
+
 
 @Composable
-fun NewAssignmentDetails(
-    navController: NavHostController,
+fun CurrentAssignmentDialog(
+    schoolName: String,
     assigntitle: String,
+    authViewModel: UserAuthViewModel,
+    assignId: String,
     assigndescription: String,
     createdTime: String,
     dueDate: String,
@@ -41,6 +40,7 @@ fun NewAssignmentDetails(
     onClose: () -> Unit
 ) {
     val context = LocalContext.current // ✅ Needed for launching intent
+    var showSubmitDialog by remember { mutableStateOf(false) }
 
     Dialog(onDismissRequest = { onClose() }) {
         Box(
@@ -96,21 +96,53 @@ fun NewAssignmentDetails(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        Text("File URL: $fileURL", fontSize = 12.sp, color = Color.Gray)
-                        Spacer(modifier = Modifier.height(12.dp))
-
                         Button(onClick = {
-                            // ✅ Launch web browser to download the file
-                            try {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(fileURL))
+                            //opens the dialog box to enter the file URL
+                            showSubmitDialog = true
+                        }) {
+                            Text("Submit")
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Button(onClick = {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(fileURL)).apply {
+                                addCategory(Intent.CATEGORY_BROWSABLE)
+                                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                            }
+
+                            val packageManager = context.packageManager
+                            if (intent.resolveActivity(packageManager) != null) {
                                 context.startActivity(intent)
-                            } catch (e: Exception) {
-                                Toast.makeText(context, "No browser found to open the link.", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "No browser found to open the link",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }) {
                             Text("Download Assignment")
                         }
                     }
+
+
+
+                    if (showSubmitDialog) {
+                        SubmitFileUrlDialog(
+                            fileUrlInitial = "",  // TODO: start empty or pass existing URL here
+                            schoolName = schoolName,
+                            assignId = assignId,
+                            authViewModel = authViewModel,
+                            context = context,
+                            onClose = { showSubmitDialog = false } // hide dialog on close
+                        )
+                    }
+
+
                 }
             }
         }
@@ -120,10 +152,12 @@ fun NewAssignmentDetails(
 
 
 
+
+
 @Preview(showBackground = true)
 @Composable
-fun NewAssignmentDetailsPreview(){
-    NewAssignmentDetails(
+fun CurrentAssignmentDialogPreview(){
+    CurrentAssignmentDialog(
         assigntitle = "Science Project",
         assigndescription = "Build a working model of a volcano.",
         createdTime = "May 5, 2025",
@@ -131,8 +165,10 @@ fun NewAssignmentDetailsPreview(){
         teacher = "Mrs. Adams",
         className = "Science 7A",
         onClose = {  },
-        navController = rememberNavController(),
         fileURL = "https://www.google.com",
+        authViewModel = UserAuthViewModel(rememberNavController(), LocalContext.current),
+        assignId = "1",
+        schoolName = "Sample School"
         )
 
 }

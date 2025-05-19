@@ -8,6 +8,7 @@ import com.sammyg.assessmate.models.auth.School
 import androidx.compose.runtime.State
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.sammyg.assessmate.navigation.ROUT_MAIN_LOGIN
 import com.sammyg.assessmate.navigation.ROUT_MAIN_REGISTER
 import com.sammyg.assessmate.navigation.ROUT_SCHOOL_DASHBOARD
 import com.sammyg.assessmate.navigation.ROUT_SCHOOL_REGISTER
@@ -55,7 +56,10 @@ class SchoolAuthViewModel(var navController: NavController, var context: Context
                                 id            = mAuth.currentUser!!.uid
                             )
                             Toast.makeText(context, "Registered Successfully: Welcome, school manager", Toast.LENGTH_LONG).show()
-                            navController.navigate(ROUT_SCHOOL_DASHBOARD)
+                            navController.navigate(ROUT_SCHOOL_DASHBOARD){
+                                popUpTo(0) { inclusive = true } // clears entire backstack
+                                launchSingleTop = true // avoids creating multiple copies of the same destination
+                            }
                         } else {
                             Toast.makeText(context, "${it.exception?.message}", Toast.LENGTH_LONG).show()
                         }
@@ -95,7 +99,10 @@ class SchoolAuthViewModel(var navController: NavController, var context: Context
                         }
                     }
                     Toast.makeText(this.context, "Login successful: Welcome school manager", Toast.LENGTH_SHORT).show()
-                    navController.navigate(ROUT_SCHOOL_DASHBOARD)
+                    navController.navigate(ROUT_SCHOOL_DASHBOARD){
+                        popUpTo(0) { inclusive = true } // clears entire backstack
+                        launchSingleTop = true // avoids creating multiple copies of the same destination
+                    }
                 }else{
                     Toast.makeText(this.context, "Error", Toast.LENGTH_SHORT).show()
                 }
@@ -108,4 +115,10 @@ class SchoolAuthViewModel(var navController: NavController, var context: Context
         return mAuth.currentUser != null
     }
 
+    fun logout() {
+        mAuth.signOut()
+        navController.navigate(ROUT_MAIN_LOGIN) {
+            popUpTo(0)
+        }
+    }
 }
