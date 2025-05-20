@@ -1,5 +1,6 @@
 package com.sammyg.assessmate.ui.theme.screens.management.teachers
 
+import android.util.Log
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.*
@@ -36,6 +37,22 @@ fun ManageCreatedAssignments(
 ) {
     var selected by remember { mutableStateOf<Assignment?>(null) }
     var selectedToDelete by remember { mutableStateOf<Assignment?>(null) }
+
+    LaunchedEffect(assignmentViewModel.createdAssignments.size) {
+        Log.d("ManageCreatedAssignments", "Created assignments count: ${assignmentViewModel.createdAssignments.size}")
+        assignmentViewModel.createdAssignments.forEach {
+            Log.d("ManageCreatedAssignments", "Assignment title: ${it.assigntitle}, teacher: ${it.teacher}")
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        Log.d("ManageCreatedAssignments", "AssignmentViewModel hash: ${assignmentViewModel.hashCode()}")
+    }
+
+    LaunchedEffect(assignmentViewModel.createdAssignments.size) {
+        Log.d("ManageAssignments", "Rendering ${assignmentViewModel.createdAssignments.size} assignments")
+    }
+
 
     Scaffold(
         topBar = {
@@ -132,11 +149,3 @@ fun DeleteConfirmationDialog(
 
 
 
-@Preview(showBackground = true)
-@Composable
-fun ManageCreatedAssignmentsPreview(){
-    ManageCreatedAssignments(navController = rememberNavController(),
-        assignmentViewModel = AssignmentViewModel(rememberNavController(), LocalContext.current, UserAuthViewModel(rememberNavController(), LocalContext.current)),
-        authViewModel = UserAuthViewModel(rememberNavController(), LocalContext.current)
-    )
-}

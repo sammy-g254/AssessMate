@@ -109,8 +109,3 @@ fun StudentDashboard(navController: NavHostController, userAuthViewModel: UserAu
 
 
 
-@Preview(showBackground = true)
-@Composable
-fun StudentDashboardPreview(){
-    StudentDashboard(navController = rememberNavController(), userAuthViewModel = UserAuthViewModel(navController = rememberNavController(), context = LocalContext.current))
-}

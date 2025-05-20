@@ -3,6 +3,9 @@ package com.sammyg.assessmate.ui.theme.screens.management.students
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
+import android.widget.Toast
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -82,6 +85,11 @@ fun AssignmentResults(
         }
     }
 
+    LaunchedEffect(submissions.size) {
+        Log.d("AssignmentResults", "Submissions size: ${submissions.size}")
+    }
+
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -114,8 +122,34 @@ fun AssignmentResults(
                     userName = userName,
                     reportfileURL = reportfileURL,
                     onDownloadClick = {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(reportfileURL))
-                        context.startActivity(intent)
+                        if (reportfileURL.isNotBlank()) {
+
+                            val uri = Uri.parse(reportfileURL)
+
+                            // 1) Try Chrome Custom Tabs
+                            try {
+                                val customTabs = CustomTabsIntent.Builder().build()
+                                customTabs.launchUrl(context, uri)
+                            } catch (_: Exception) {
+                                // 2) Fallback to normal ACTION_VIEW with chooser
+                                val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+                                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                }
+                                val chooser = Intent.createChooser(intent, "Open with…")
+                                // 3) Guard so we don't crash if truly nothing can handle it
+                                if (chooser.resolveActivity(context.packageManager) != null) {
+                                    context.startActivity(chooser)
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "No app available to open link",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        } else {
+                            Toast.makeText(context, "File URL is empty", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 )
             }
@@ -127,8 +161,3 @@ fun AssignmentResults(
 
 
 
-/*@Preview(showBackground = true)
-@Composable
-fun AssignmentResultsPreview(){
-    AssignmentResults(navController = rememberNavController())
-}*/

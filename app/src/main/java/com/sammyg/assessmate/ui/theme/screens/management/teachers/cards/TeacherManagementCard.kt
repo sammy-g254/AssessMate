@@ -95,7 +95,12 @@ fun TeacherManagementCard(
 
                     TextButton(
                         onClick = {
-                            navController.currentBackStackEntry?.savedStateHandle?.set("assignmentToEdit", assignment)
+                            // 1) Save the Assignment into the SavedStateHandle of the current entry
+                            navController.currentBackStackEntry
+                                ?.savedStateHandle
+                                ?.set("assignmentToEdit", assignment)
+
+                            // 2) Navigate to the Update screen
                             navController.navigate(ROUT_TEACHER_UPDATE_ASSIGNMENTS)
                         },
                         modifier = Modifier
@@ -124,25 +129,3 @@ fun TeacherManagementCard(
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun TeacherManagementCardPreview() {
-    val sampleAssignment = Assignment(
-        teacher = "Mr. Smith",
-        className = "Grade 10 - A",
-        assigntitle = "Math Homework",
-        assigndescription = "Solve the equations",
-        dueDate = "May 10",
-        fileURL = "https://example.com/file.pdf",
-        createdTime = "9:00 AM",
-        assignId = "sample123"
-    )
-
-    TeacherManagementCard(
-        navController = NavController(LocalContext.current),
-        assignment = sampleAssignment,
-        onReadClick = {},
-        onDeleteClick = {}
-    )
-}

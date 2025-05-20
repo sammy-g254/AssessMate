@@ -35,6 +35,7 @@ fun SubmittedAssignmentCard(
     authViewModel: UserAuthViewModel,
     navController: NavController,
     userName: String,
+    onDownloadClick: () -> Unit,
     onUploadClick: () -> Unit
 ) {
 
@@ -91,45 +92,7 @@ fun SubmittedAssignmentCard(
             }
 
             Button(
-                onClick = {
-                    val userName = authViewModel.currentUserData.value?.name
-                    if (userName.isNullOrBlank()) {
-                        Toast.makeText(context, "Unknown user", Toast.LENGTH_SHORT).show()
-                        return@Button
-                    }
-
-                    SessionManager.fetchCurrentUserSchoolName { schoolName ->
-                        if (schoolName.isNullOrBlank()) {
-                            Toast.makeText(context, "School not found", Toast.LENGTH_SHORT).show()
-                            return@fetchCurrentUserSchoolName
-                        }
-
-                        val urlRef = FirebaseDatabase.getInstance()
-                            .getReference("$schoolName/Assignments/${assignment.assignId}/$userName/submittedfile")
-
-                        urlRef.get()
-                            .addOnSuccessListener { snap ->
-                                val downloadUrl = snap.getValue(String::class.java)
-                                if (downloadUrl.isNullOrBlank()) {
-                                    Toast.makeText(context, "No file URL found", Toast.LENGTH_SHORT).show()
-                                    return@addOnSuccessListener
-                                }
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl))
-                                    .apply {
-                                        addCategory(Intent.CATEGORY_BROWSABLE)
-                                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                                    }
-                                if (intent.resolveActivity(context.packageManager) != null) {
-                                    context.startActivity(intent)
-                                } else {
-                                    Toast.makeText(context, "No browser found", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                            .addOnFailureListener { e ->
-                                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                            }
-                    }
-                },
+                onClick = { onDownloadClick() },
                 modifier = Modifier
                     .padding(end = 1.dp),
                 shape = RectangleShape,
@@ -156,7 +119,7 @@ fun SubmittedAssignmentCard(
             }
 
             Button(
-                onClick = { onUploadClick},
+                onClick = { onUploadClick()},
                 modifier = Modifier
                     .padding(end = 16.dp),
                 shape = RectangleShape,
@@ -185,25 +148,3 @@ fun SubmittedAssignmentCard(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun SubmittedAssignmentCardPreview() {
-    val sampleAssignment = Assignment(
-        teacher = "Mr. Smith",
-        className = "Grade 10 - A",
-        assigntitle = "Math Homework",
-        assigndescription = "Solve the equations",
-        dueDate = "May 10",
-        fileURL = "https://example.com/file.pdf",
-        createdTime = "9:00 AM",
-        assignId = "sample123"
-    )
-
-    SubmittedAssignmentCard(
-        assignment = sampleAssignment,
-        authViewModel = UserAuthViewModel(NavController(LocalContext.current), LocalContext.current),
-        navController = NavController(LocalContext.current),
-        userName = "John Doe",
-        onUploadClick = {}
-        )
-}

@@ -253,9 +253,3 @@ fun MainRegister(
 
     }
 
-
-@Composable
-@Preview(showBackground = true)
-fun MainRegisterPreview(){
-    MainRegister(navController = rememberNavController(), authViewModel = UserAuthViewModel(navController = rememberNavController(), context = LocalContext.current))
-}

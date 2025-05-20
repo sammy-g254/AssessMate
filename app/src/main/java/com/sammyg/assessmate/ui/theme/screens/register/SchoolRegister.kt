@@ -249,8 +249,3 @@ fun SchoolRegister(
     }
 }
 
-@Composable
-@Preview(showBackground = true)
-fun SchoolRegisterPreview(){
-    SchoolRegister(navController = rememberNavController(), schoolauthViewModel = SchoolAuthViewModel(navController = rememberNavController(), context = LocalContext.current))
-}

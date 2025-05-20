@@ -1,6 +1,7 @@
 package com.sammyg.assessmate.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -9,9 +10,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
 import com.sammyg.assessmate.data.auth.SchoolAuthViewModel
 import com.sammyg.assessmate.data.auth.UserAuthViewModel
 import com.sammyg.assessmate.data.database.AssignmentViewModel
+import com.sammyg.assessmate.models.database.Assignment
 import com.sammyg.assessmate.ui.theme.screens.about.About
 import com.sammyg.assessmate.ui.theme.screens.account.ManageSchoolAccount
 import com.sammyg.assessmate.ui.theme.screens.account.ManageUserAccount
@@ -37,12 +40,23 @@ fun AppNavHost(
     navController: NavHostController = rememberNavController(),
     startDestination: String = ROUT_SPLASH
 ) {
-
-     // 1️⃣ Create one shared Auth VM here:
     val context = LocalContext.current
+
+    // Initialize your shared ViewModels only once and remember them
     val authViewModel = remember { UserAuthViewModel(navController, context) }
     val schoolauthViewModel = remember { SchoolAuthViewModel(navController, context) }
     val assignmentViewModel = remember { AssignmentViewModel(navController, context, authViewModel) }
+
+    val currentUser = FirebaseAuth.getInstance().currentUser
+
+    // Navigate to login if not logged in already on launch
+    LaunchedEffect(currentUser) {
+        if (currentUser == null) {
+            navController.navigate(ROUT_MAIN_LOGIN) {
+                popUpTo(0) { inclusive = true } // Clear navigation backstack
+            }
+        }
+    }
 
     NavHost(
         navController = navController,
@@ -52,7 +66,6 @@ fun AppNavHost(
         composable(ROUT_SPLASH) {
             SplashScreen(navController, authViewModel)
         }
-
         composable(ROUT_MAIN_LOGIN) {
             MainLogin(navController, authViewModel)
         }
@@ -97,15 +110,17 @@ fun AppNavHost(
         }
 
         composable(ROUT_TEACHER_UPDATE_ASSIGNMENTS) {
-            val assignmentToEdit = navController.previousBackStackEntry
+            val assignmentToEdit = navController
+                .previousBackStackEntry
                 ?.savedStateHandle
-                ?.get<com.sammyg.assessmate.models.database.Assignment>("assignmentToEdit")
+                ?.get<Assignment>("assignmentToEdit")
 
+            // Pass it into the composable
             UpdateAssignment(
-                navController = navController,
-                assignmentViewModel = assignmentViewModel,
-                userAuthViewModel = authViewModel,
-                assignmentToEdit = assignmentToEdit
+                navController         = navController,
+                assignmentViewModel   = assignmentViewModel,
+                userAuthViewModel     = authViewModel,
+                assignmentToEdit      = assignmentToEdit  // <— HERE
             )
         }
 

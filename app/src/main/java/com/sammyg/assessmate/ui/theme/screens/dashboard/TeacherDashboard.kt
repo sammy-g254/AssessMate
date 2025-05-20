@@ -124,9 +124,3 @@ fun TeacherDashboard(
 
 
 
-
-@Preview(showBackground = true)
-@Composable
-fun TeacherDashboardPreview(){
-    TeacherDashboard(navController = rememberNavController(), userAuthViewModel = UserAuthViewModel(navController = rememberNavController(), context = LocalContext.current))
-}

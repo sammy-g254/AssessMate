@@ -164,8 +164,3 @@ fun ManageSchoolAccount(
 }
 
 
-/*@Preview(showBackground = true)
-@Composable
-fun ManageSchoolAccountPreview(){
-    ManageSchoolAccount()
-}*/

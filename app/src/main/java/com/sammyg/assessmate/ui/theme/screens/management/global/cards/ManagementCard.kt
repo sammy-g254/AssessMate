@@ -82,22 +82,4 @@ fun ManagementCard(
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun StudentManagementCardPreview() {
-    val sampleAssignment = Assignment(
-        teacher = "Mr. Smith",
-        className = "Grade 10 - A",
-        assigntitle = "Math Homework",
-        assigndescription = "Solve the equations",
-        dueDate = "May 10",
-        fileURL = "https://example.com/file.pdf",
-        createdTime = "9:00 AM",
-        assignId = "sample123"
-    )
 
-    ManagementCard(
-        assignment = sampleAssignment,
-        onClick = {}
-    )
-}

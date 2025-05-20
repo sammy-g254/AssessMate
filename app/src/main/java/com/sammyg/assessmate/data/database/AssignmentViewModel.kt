@@ -29,67 +29,71 @@ class AssignmentViewModel(
     private val _assignments = mutableStateListOf<Assignment>()
     val assignments: SnapshotStateList<Assignment> = _assignments
 
-    val createdAssignments = mutableStateListOf<Assignment>()
+    private val _createdAssignments = mutableStateListOf<Assignment>()
+    val createdAssignments: SnapshotStateList<Assignment> = _createdAssignments
+
 
     // Initialize the ViewModel
     init {
         val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser == null) {
-            // Redirect if not logged in
-            navController.navigate(ROUT_MAIN_LOGIN)
-        } else {
-            // First get school name
-            SessionManager.fetchCurrentUserSchoolName { schoolName ->
-                if (schoolName != null) {
-                    // Then get the current user's username
-                    SessionManager.fetchCurrentUsername { currentUsername ->
-                        if (currentUsername != null) {
+        if (currentUser != null) {
+            SessionManager.fetchCurrentUserSchoolName { schoolName: String? ->
+                if (!schoolName.isNullOrEmpty()) {
+                    SessionManager.fetchCurrentUsername { currentUsername: String? ->
+                        if (!currentUsername.isNullOrEmpty()) {
                             val assignRef = FirebaseDatabase.getInstance()
                                 .getReference("$schoolName/Assignments")
 
                             assignRef.addValueEventListener(object : ValueEventListener {
                                 override fun onDataChange(snapshot: DataSnapshot) {
+                                    Log.d("AssignmentViewModel", "Firebase onDataChange triggered")
                                     _assignments.clear()
-                                    createdAssignments.clear()
+                                    _createdAssignments.clear()
 
-                                    snapshot.children.forEach { child ->
-                                        // READ straight from the assignment node itself
-                                        val a = child.getValue(Assignment::class.java)
-                                        if (a != null) {
-                                            _assignments.add(a)
-                                            if (a.teacher == currentUsername) {
-                                                createdAssignments.add(a)
+                                    if (!snapshot.exists()) {
+                                        Log.d("AssignmentViewModel", "No assignments found at path")
+                                    }
+
+                                    for (child in snapshot.children) {
+                                        val assignment = child.getValue(Assignment::class.java)
+                                        if (assignment != null) {
+                                            Log.d("AssignmentViewModel", "Loaded assignment: ${assignment.assigntitle} by ${assignment.teacher}")
+                                            _assignments.add(assignment)
+                                            if (assignment.teacher == currentUsername) {
+                                                _createdAssignments.add(assignment)
                                             }
+                                        } else {
+                                            Log.d("AssignmentViewModel", "Failed to parse assignment from snapshot: ${child.key}")
                                         }
                                     }
+                                    Log.d("AssignmentViewModel", "Total assignments loaded: ${_assignments.size}")
+                                    Log.d("AssignmentViewModel", "Created assignments count: ${createdAssignments.size}")
+
                                 }
 
                                 override fun onCancelled(error: DatabaseError) {
+                                    Log.e("AssignmentViewModel", "Firebase listener cancelled: ${error.message}")
                                     Toast.makeText(
                                         context,
-                                        "Failed to load assignments",
+                                        "Failed to load assignments: ${error.message}",
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
                             })
                         } else {
-                            Toast.makeText(
-                                context,
-                                "Failed to get your username",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(context, "Failed to get your username", Toast.LENGTH_SHORT).show()
                         }
                     }
                 } else {
-                    Toast.makeText(
-                        context,
-                        "Failed to get your school name",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(context, "Failed to get your school name", Toast.LENGTH_SHORT).show()
                 }
             }
         }
+
     }
+
+
+
 
 
     fun createAssignment(
@@ -156,9 +160,9 @@ class AssignmentViewModel(
         description: String,
         fileURL: String,
         dueDate: String,
-        context: Context,
-        navController: NavController
-    ) {
+        onSuccess: () -> Unit,        // ← callback instead
+        onError: (Throwable) -> Unit  // ← optional error callback
+        ) {
         SessionManager.fetchCurrentUserSchoolName { schoolName ->
             if (schoolName != null) {
                 val assignmentRef = FirebaseDatabase.getInstance()
@@ -173,19 +177,8 @@ class AssignmentViewModel(
                 )
 
                 assignmentRef.updateChildren(updates)
-                    .addOnSuccessListener {
-                        Toast.makeText(
-                            context,
-                            "Assignment updated successfully",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        navController.navigate(ROUT_TEACHER_DASHBOARD)
-                    }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(context, "Failed to update assignment", Toast.LENGTH_SHORT)
-                            .show()
-                        Log.e("AssignmentViewModel", "Failed to update assignment: ${e.message}")
-                    }
+                    .addOnSuccessListener { onSuccess() }
+                    .addOnFailureListener { e -> onError(e) }
             } else {
                 Toast.makeText(context, "Failed to fetch school name", Toast.LENGTH_SHORT).show()
             }

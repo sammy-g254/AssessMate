@@ -1,5 +1,6 @@
 package com.sammyg.assessmate.ui.theme.screens.management.students
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -45,6 +46,10 @@ fun CurrentAssignments(
                 currentSchoolName = name
             }
         }
+    }
+
+    LaunchedEffect(assignmentViewModel.assignments.size) {
+        Log.d("CurrentAssignments", "Assignments count: ${assignmentViewModel.assignments.size}")
     }
 
     Scaffold(
@@ -104,12 +109,3 @@ fun CurrentAssignments(
 
 
 
-@Preview(showBackground = true)
-@Composable
-fun CurrentAssignmentPreview(){
-    CurrentAssignments(
-        navController = rememberNavController(),
-        assignmentViewModel = AssignmentViewModel(rememberNavController(), LocalContext.current, UserAuthViewModel(rememberNavController(), LocalContext.current)),
-        authViewModel = UserAuthViewModel(rememberNavController(), LocalContext.current)
-    )
-}

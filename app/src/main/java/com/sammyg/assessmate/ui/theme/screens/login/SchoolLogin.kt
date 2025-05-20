@@ -138,8 +138,3 @@ fun SchoolLogin(
 
 }
 
-@Composable
-@Preview(showBackground = true)
-fun SchoolLoginPreview(){
-    SchoolLogin(navController = rememberNavController(), schoolAuthViewModel = SchoolAuthViewModel(navController = rememberNavController(), context = LocalContext.current))
-}

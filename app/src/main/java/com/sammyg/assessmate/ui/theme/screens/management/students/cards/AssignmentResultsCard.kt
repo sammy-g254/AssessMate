@@ -107,24 +107,4 @@ fun AssignmentResultsCard(
     }
 }
 
-/*@Preview(showBackground = true)
-@Composable
-fun AssignmentResultsCardPreview() {
-    val sampleAssignment = Assignment(
-        teacher = "Mr. Smith",
-        className = "Grade 10 - A",
-        assigntitle = "Math Homework",
-        assigndescription = "Solve the equations",
-        dueDate = "May 10",
-        fileURL = "https://example.com/file.pdf",
-        createdTime = "9:00 AM",
-        assignId = "sample123"
-    )
 
-    AssignmentResultsCard(
-        assignment = sampleAssignment,
-        userName = "John Doe",
-        reportfileURL = "https://example.com/report.pdf",
-        onDownloadClick = {}
-    )
-}*/

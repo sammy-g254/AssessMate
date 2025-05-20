@@ -1,6 +1,10 @@
 package com.sammyg.assessmate.ui.theme.screens.management.teachers
 
 
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -37,7 +41,9 @@ import com.sammyg.assessmate.ui.theme.screens.management.teachers.cards.UploadRe
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import androidx.compose.foundation.lazy.items
-
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,6 +53,7 @@ fun ManageSubmittedAssignments(
     assignmentViewModel: AssignmentViewModel,
     authViewModel: UserAuthViewModel
 ) {
+    val scope = rememberCoroutineScope()
     val context = LocalContext.current
     var schoolName by remember { mutableStateOf<String?>(null) }
     var selectedAssignment by remember { mutableStateOf<Assignment?>(null) }
@@ -68,8 +75,9 @@ fun ManageSubmittedAssignments(
                     .await()
             }
             snapshot.children
-                .filter { it.key != "info" }               // ← drop the extra layer
-                .mapNotNull { it.key }
+                // only children that have a “submittedfile” property get through
+                .filter { ds -> ds.hasChild("submittedfile") }
+                .mapNotNull { it.key }           // now these are true student usernames
                 .map { userName -> assignment to userName }
         }
     }
@@ -109,7 +117,60 @@ fun ManageSubmittedAssignments(
                     onUploadClick = {
                         selectedAssignment = assignment
                         selectedUserName = userName
-                    }
+                    },
+                    onDownloadClick = {
+                        // Launch a coroutine to run Firebase calls off the main thread
+                        scope.launch {
+
+                            // Step 1: Get the current school name (already remembered earlier)
+                            val sn = schoolName ?: return@launch  // Exit if school name is null
+
+                            // Step 2: Build the Firebase reference path to this student's submission
+                            val ref = FirebaseDatabase.getInstance()
+                                .getReference("$sn/Assignments/${assignment.assignId}/$userName")
+
+                            // Step 3: Fetch the snapshot at that path
+                            val snap = ref.get().await()  // Use kotlinx.coroutines.tasks.await
+
+                            // Step 4: Try to get the "submittedfile" URL from the snapshot
+                            val fileUrl = snap.child("submittedfile")
+                                .getValue(String::class.java)
+                                .orEmpty()
+
+                            // Step 5: Check if the URL is actually there
+                            if (fileUrl.isBlank()) {
+                                Toast.makeText(
+                                    context,
+                                    "No submission URL found",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@launch
+                            }
+
+                            // Step 6: Try to open the URL with Chrome Custom Tabs first
+                            try {
+                                val customTabsIntent = CustomTabsIntent.Builder().build()
+                                customTabsIntent.launchUrl(context, Uri.parse(fileUrl))
+
+                            } catch (_: Exception) {
+                                // Step 7: Fallback — open with default app chooser
+                                val fallbackIntent = Intent(Intent.ACTION_VIEW, Uri.parse(fileUrl)).apply {
+                                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                }
+                                val chooser = Intent.createChooser(fallbackIntent, "Open with…")
+
+                                // Step 8: Guard against no available app
+                                if (chooser.resolveActivity(context.packageManager) != null) {
+                                    context.startActivity(chooser)
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "No app found to open the link",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        }                    }
                 )
             }
         }
@@ -134,10 +195,3 @@ fun ManageSubmittedAssignments(
 
 
 
-
-
-/*@Preview(showBackground = true)
-@Composable
-fun ManageSubmittedAssignmentsPreview(){
-    ManageSubmittedAssignments(navController = rememberNavController())
-}*/

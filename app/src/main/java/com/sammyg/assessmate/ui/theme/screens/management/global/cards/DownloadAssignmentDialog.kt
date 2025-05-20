@@ -20,6 +20,7 @@ import androidx.navigation.NavHostController
 import com.sammyg.assessmate.ui.theme.Purple
 import android.content.Intent
 import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.Arrangement
 
 @Composable
@@ -92,21 +93,29 @@ fun DownloadAssignmentDetails(
                         Button(onClick = {
                             if (fileURL.isNotBlank()) {
 
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(fileURL)).apply {
-                                addCategory(Intent.CATEGORY_BROWSABLE)
-                                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                            }
+                                val uri = Uri.parse(fileURL)
 
-                            val packageManager = context.packageManager
-                            if (intent.resolveActivity(packageManager) != null) {
-                                context.startActivity(intent)
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "No browser found to open the link",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                                // 1) Try Chrome Custom Tabs
+                                try {
+                                    val customTabs = CustomTabsIntent.Builder().build()
+                                    customTabs.launchUrl(context, uri)
+                                } catch (_: Exception) {
+                                    // 2) Fallback to normal ACTION_VIEW with chooser
+                                    val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+                                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                    }
+                                    val chooser = Intent.createChooser(intent, "Open with…")
+                                    // 3) Guard so we don't crash if truly nothing can handle it
+                                    if (chooser.resolveActivity(context.packageManager) != null) {
+                                        context.startActivity(chooser)
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "No app available to open link",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
                             } else {
                                 Toast.makeText(context, "File URL is empty", Toast.LENGTH_SHORT).show()
                             }

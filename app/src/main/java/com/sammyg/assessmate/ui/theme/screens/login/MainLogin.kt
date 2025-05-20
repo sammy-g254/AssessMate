@@ -189,8 +189,3 @@ fun MainLogin(
 
 
 
-@Composable
-@Preview(showBackground = true)
-fun MainLoginPreview(){
-    MainLogin(navController = rememberNavController(), authViewModel = UserAuthViewModel(navController = rememberNavController(), context = LocalContext.current))
-}

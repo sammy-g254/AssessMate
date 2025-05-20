@@ -171,7 +171,7 @@ fun CreateAssignment(
                 )
 
                 Text(
-                    text = "The URL you are going to paste above is the link to the assignment which you have uploaded to a third - party app or website. An example is the link generated for public file sharing in cloud services like Google Drive when you choose to share an uploaded file.",
+                    text = "The URL you are going to paste above is the link to the assignment which you have uploaded to a third - party app or website. An example is the link generated for public file sharing in cloud services like Google Drive when you choose to share an uploaded file.  NOTE: The URL must start with https://",
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.SansSerif,
@@ -216,13 +216,14 @@ fun CreateAssignment(
                             } else {
                                 // Proceed with assignment creation
                                 assignmentViewModel.createAssignment(
+                                    teacher!!, // Teacher name
                                     className,
                                     assigntitle,
                                     assigndescription,
                                     dueDate,
                                     fileURL,
                                     createdTime, // Pass it here
-                                    teacher!!, // Teacher name
+
                                 )
 
                                 navController.navigate(ROUT_TEACHER_DASHBOARD)
@@ -295,12 +296,3 @@ fun DueDateField(
 
 
 
-@Preview(showBackground = true)
-@Composable
-fun CreateAssignmentPreview(){
-    CreateAssignment(
-        navController = rememberNavController(),
-        assignmentViewModel = AssignmentViewModel(rememberNavController(), LocalContext.current, UserAuthViewModel(rememberNavController(), LocalContext.current)),
-        userAuthViewModel = UserAuthViewModel(rememberNavController(), LocalContext.current)
-    )
-}

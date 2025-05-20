@@ -81,12 +81,3 @@ fun AccessAllAssignments(
 
 
 
-@Preview(showBackground = true)
-@Composable
-fun AccessAllAssignmentPreview(){
-    AccessAllAssignments(
-        navController = rememberNavController(),
-        assignmentViewModel = AssignmentViewModel(rememberNavController(), LocalContext.current, UserAuthViewModel(rememberNavController(), LocalContext.current)),
-        authViewModel = UserAuthViewModel(navController = rememberNavController(), context = LocalContext.current)
-    )
-}

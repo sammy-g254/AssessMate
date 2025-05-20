@@ -1,6 +1,7 @@
 package com.sammyg.assessmate.ui.theme.screens.management.teachers.cards
 
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -34,6 +35,7 @@ import com.sammyg.assessmate.R
 import com.sammyg.assessmate.ui.theme.Purple
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import com.sammyg.assessmate.data.auth.UserAuthViewModel
 import com.sammyg.assessmate.data.database.AssignmentViewModel
@@ -48,12 +50,16 @@ fun UpdateAssignment(
     assignmentViewModel: AssignmentViewModel,
     userAuthViewModel: UserAuthViewModel, // Pass UserAuthViewModel
     assignmentToEdit: Assignment? = null,
-    onClose: () -> Unit = {}
 ) {
 
-    val assignment = navController.previousBackStackEntry
-        ?.savedStateHandle
-        ?.get<Assignment>("assignmentToEdit")
+// At top of your composable:
+    if (assignmentToEdit == null) {
+        // You could show a loading spinner, or pop back immediately:
+        LaunchedEffect(Unit) { navController.popBackStack() }
+        return
+    }
+    val assignment = assignmentToEdit
+
 
     Scaffold(
         topBar = {
@@ -62,7 +68,7 @@ fun UpdateAssignment(
                     Text("Update Assignments", fontWeight = FontWeight.Bold)
                 },
                 actions = {
-                    IconButton(onClick = { onClose() }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.Close, contentDescription = "Close")
                     }
                 },
@@ -95,11 +101,11 @@ fun UpdateAssignment(
                 // Removed teacher text field, now fetching the teacher name from the current user
                 val teacher = userAuthViewModel.currentUserData.value?.name
 
-                var className by remember { mutableStateOf(assignmentToEdit?.className ?: "") }
-                var assigntitle by remember { mutableStateOf(assignmentToEdit?.assigntitle ?: "") }
-                var assigndescription by remember { mutableStateOf(assignmentToEdit?.assigndescription ?: "") }
-                var fileURL by remember { mutableStateOf(assignmentToEdit?.fileURL ?: "") }
-                var dueDate by remember { mutableStateOf(assignmentToEdit?.dueDate ?: "") }
+                var className by remember { mutableStateOf(assignment.className) }
+                var assigntitle by remember { mutableStateOf(assignment.assigntitle) }
+                var assigndescription by remember { mutableStateOf(assignment.assigndescription) }
+                var fileURL by remember { mutableStateOf(assignment.fileURL) }
+                var dueDate by remember { mutableStateOf(assignment.dueDate) }
 
                 val backgroundColor = Color.White.copy(alpha = 0.5f)
 
@@ -166,7 +172,7 @@ fun UpdateAssignment(
                 )
 
                 Text(
-                    text = "The URL you are going to paste above is the link to the assignment which you have uploaded to a third - party app or website. An example is the link generated for public file sharing in cloud services like Google Drive when you choose to share an uploaded file.",
+                    text = "The URL you are going to paste above is the link to the assignment which you have uploaded to a third - party app or website. An example is the link generated for public file sharing in cloud services like Google Drive when you choose to share an uploaded file. NOTE: The URL must start with https://",
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.SansSerif,
@@ -195,7 +201,7 @@ fun UpdateAssignment(
 
                     Button(
                         onClick =  {
-                            assignment?.assignId?.let { assignId ->
+                            assignment.assignId.let { assignId ->
                                 assignmentViewModel.updateAssignment(
                                     assignId = assignId,
                                     className = className,
@@ -203,9 +209,16 @@ fun UpdateAssignment(
                                     description = assigndescription,
                                     fileURL = fileURL,
                                     dueDate = dueDate,
-                                    context = context,
-                                    navController = navController
-                                )
+                                    onSuccess   = {
+                                        // go back to ManageCreatedAssignments
+                                        navController.popBackStack()
+                                    },
+                                    onError  = { e ->
+                                        Toast.makeText(context,
+                                            "Failed to update: ${e.message}",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }                                )
                             }
                         },
                         modifier = Modifier.fillMaxWidth()
@@ -223,12 +236,3 @@ fun UpdateAssignment(
 
 
 
-@Preview(showBackground = true)
-@Composable
-fun UpdateAssignmentPreview(){
-    UpdateAssignment(
-        navController = rememberNavController(),
-        assignmentViewModel = AssignmentViewModel(rememberNavController(), LocalContext.current, UserAuthViewModel(rememberNavController(), LocalContext.current)),
-        userAuthViewModel = UserAuthViewModel(rememberNavController(), LocalContext.current)
-    )
-}

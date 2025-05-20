@@ -189,8 +189,3 @@ fun About(
     }
 }
 
-@Preview
-@Composable
-fun AboutPreview(){
-    About(navController = rememberNavController())
-}

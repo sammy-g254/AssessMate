@@ -3,6 +3,7 @@ package com.sammyg.assessmate.ui.theme.screens.management.students.cards
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -109,20 +110,33 @@ fun CurrentAssignmentDialog(
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         Button(onClick = {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(fileURL)).apply {
-                                addCategory(Intent.CATEGORY_BROWSABLE)
-                                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                            }
+                            if (fileURL.isNotBlank()) {
 
-                            val packageManager = context.packageManager
-                            if (intent.resolveActivity(packageManager) != null) {
-                                context.startActivity(intent)
+                                val uri = Uri.parse(fileURL)
+
+                                // 1) Try Chrome Custom Tabs
+                                try {
+                                    val customTabs = CustomTabsIntent.Builder().build()
+                                    customTabs.launchUrl(context, uri)
+                                } catch (_: Exception) {
+                                    // 2) Fallback to normal ACTION_VIEW with chooser
+                                    val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+                                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                    }
+                                    val chooser = Intent.createChooser(intent, "Open with…")
+                                    // 3) Guard so we don't crash if truly nothing can handle it
+                                    if (chooser.resolveActivity(context.packageManager) != null) {
+                                        context.startActivity(chooser)
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "No app available to open link",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
                             } else {
-                                Toast.makeText(
-                                    context,
-                                    "No browser found to open the link",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                Toast.makeText(context, "File URL is empty", Toast.LENGTH_SHORT).show()
                             }
                         }) {
                             Text("Download Assignment")
@@ -154,21 +168,3 @@ fun CurrentAssignmentDialog(
 
 
 
-@Preview(showBackground = true)
-@Composable
-fun CurrentAssignmentDialogPreview(){
-    CurrentAssignmentDialog(
-        assigntitle = "Science Project",
-        assigndescription = "Build a working model of a volcano.",
-        createdTime = "May 5, 2025",
-        dueDate = "May 10, 2025",
-        teacher = "Mrs. Adams",
-        className = "Science 7A",
-        onClose = {  },
-        fileURL = "https://www.google.com",
-        authViewModel = UserAuthViewModel(rememberNavController(), LocalContext.current),
-        assignId = "1",
-        schoolName = "Sample School"
-        )
-
-}
