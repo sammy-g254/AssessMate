@@ -60,7 +60,7 @@ fun DownloadAssignmentDetails(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "MANAGE ASSIGNMENT",
+                            text = "READ ASSIGNMENT",
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
                             color = Purple

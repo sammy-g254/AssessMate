@@ -48,8 +48,6 @@ fun ManageUserAccount(
     val user = userAuthViewModel.currentUserData.value
     val userName = user?.name ?: "Unknown user"
     val email = user?.email ?: "Unknown email"
-    val school = schoolAuthViewModel.currentSchoolData.value
-    val schoolname = school?.schoolname ?: "School"
     val schoolCode = user?.schoolCode ?: "Unknown school code"
 
     Scaffold(
@@ -99,7 +97,6 @@ fun ManageUserAccount(
                         )
                     ) {
                         Text("Email")
-                        Text("School")
                         Text("School Code")
                     }
                 }
@@ -119,7 +116,6 @@ fun ManageUserAccount(
                     ) {
                         Text(":")
                         Text(":")
-                        Text(":")
                     }
                 }
 
@@ -135,7 +131,6 @@ fun ManageUserAccount(
                         )
                     ) {
                         Text(text = email)
-                        Text(text = schoolname)
                         Text(text = schoolCode)
                     }
                 }

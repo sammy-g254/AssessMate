@@ -60,7 +60,7 @@ fun UploadResultsDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Submit Assignment File URL",
+                        text = "Upload Results URL",
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
                         color = Purple
